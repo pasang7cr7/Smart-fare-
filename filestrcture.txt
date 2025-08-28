@@ -1,0 +1,10 @@
+main.cpp_entry point user interaction
+card.h- class definitoin for card
+card.cpp- implemettaion for card
+admin.h- admin class and function
+admin.cpp - admin logic
+utlis.h - utility functions
+utils.cpp - implemettaion
+
+
+
