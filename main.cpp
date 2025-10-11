@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string>
 #include "TIME.h" // Corrected header file name
+#include "card.h"
 
 using namespace std;
 
@@ -16,13 +17,15 @@ int main()
 
     while(1)
     {
-        cout << "1. Register Card\n2. Top-up Card\n3. Start Ride\n4. Show Card Ride History\n5. Admin Panel\n6. Exit\n7.get time\nChoice: ";
+        cout<<endl;
+        cout << "1. Register Card\n2. Top-up Card\n3. Start Ride\n4. Show Card Ride History\n5. Admin Panel\n6. Exit\n7. Show card details\n8. get time\n\nChoice: ";
         cin>>choice;
 
         switch(choice)
         {
             case 1:
                 // Register Card
+                registerCard();
                 break;
             case 2:
                 // Top-up Card
@@ -39,7 +42,12 @@ int main()
             case 6:
                 cout << "Thank you for using the Smart Card System!\n";
                 return 0;
+                break;
                 case 7:
+                //show card detail
+                break;
+
+                case 8:
                 {
                     cout << "Current date: " << getcurrentdate() << endl;
                     break;
