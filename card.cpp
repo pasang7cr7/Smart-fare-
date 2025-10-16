@@ -1,11 +1,13 @@
 #include "card.h"
+#include "utils.h"
 #include<iostream>
 #include<fstream>
 #include <cstdlib>
 #include "time.h"
 #include<string>
 #include <cstdio> // Add this at the top for sscanf and sprintf
-
+#include<sstream>
+#include<vector>
 
 using namespace std;
 
@@ -121,4 +123,165 @@ void registerCard()
 
     cout << "\nCard registered successfully!\n"; // Success message
     newCard.display(); // Show card details
+}
+
+void startride()
+{
+    string searchID;
+    cout<<"\nEnter your card ID: ";
+    cin>>searchID;
+
+    ifstream searchfrom("card.txt");
+    if(!searchfrom)
+    {
+        cout<<"Error opening file."<<endl;
+        return;
+    }
+
+    string line;
+    bool found = false;
+    Card currentCard;
+    while(getline(searchfrom, line))
+    {
+        stringstream ss(line);
+        string id, name, type, balanceStr, expiry;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, balanceStr, ',');
+        getline(ss, expiry, ',');
+
+        if(id == searchID)
+    {
+        currentCard = Card(id, name,type ,stod(balanceStr), expiry);
+        found = true;
+        break;
+    }
+    }
+    searchfrom.close();
+
+    if(!found)
+    {
+        cout<<"Card ID not found."<<endl;
+        return;
+    }
+
+    cout<<"\nCard found. Details:"<<endl<<endl;
+    currentCard.display();
+    cout<<endl;
+
+
+    //now start ride process
+
+    vector<string> stops = {
+        "kalanki",
+        "balkhu",
+        "Ekantakuna",
+        "Satdobato",
+        "Gwarko",
+        "Koteshwor",
+        "tinkune",
+        "Sinamangal",
+        "Gaushala",
+        "Chabahil",
+        "Sukedhara",
+        "Maharajgunj",
+        "balaju"
+    };
+    
+    cout<<"Available stops:\n";
+    for(int i = 0; i<stops.size();i++)
+    {
+        cout<<i+1<<" "<<stops[i]<<endl;
+
+
+    }
+
+    int startind, endind;
+    cout<<"\n Enter starting point: ";
+    cin>>startind;
+
+    
+
+    cout<<"\n Enter ending stop: ";
+    cin>>endind;
+
+    if(startind<1 || endind<1 || startind > stops.size() || endind > stops.size())
+    {
+        cout<<"\nInvalid starting or ending stops! ";
+        return;
+    }
+
+    string startStop = stops[startind-1];
+    string endStop = stops[endind-1];
+
+    double fare = calculateFare(currentCard.cardType, startStop, endStop);
+
+    if(currentCard.balance<fare || currentCard.balance == 0)
+    {
+        cout<<"\nYou dont have sufficient balance! Please recharge first! ";
+        return;
+    }
+
+    if(fare = 0)
+    {
+        cout<<"\n Invalid ride details, ride cancelled! \n";
+        return;
+    }
+    cout<<"\n Fare for this ride is: Rs, "<<fare<<endl;
+}
+
+
+void topupCard()
+{
+     string searchID;
+    cout<<"\nEnter your card ID: ";
+    cin>>searchID;
+
+    ifstream searchfrom("card.txt");
+    if(!searchfrom)
+    {
+        cout<<"Error opening file."<<endl;
+        return;
+    }
+
+    string line;
+    bool found = false;
+    Card currentCard;
+    while(getline(searchfrom, line))
+    {
+        stringstream ss(line);
+        string id, name, type, balanceStr, expiry;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, balanceStr, ',');
+        getline(ss, expiry, ',');
+
+        if(id == searchID)
+    {
+        currentCard = Card(id, name,type ,stod(balanceStr), expiry);
+        found = true;
+        break;
+    }
+    }
+    searchfrom.close();
+
+    if(!found)
+    {
+        cout<<"Card ID not found."<<endl;
+        return;
+    }
+
+    cout<<"\nCard found. Details:"<<endl<<endl;
+    currentCard.display();
+    cout<<endl;
+
+    double amt;
+
+    cout<<"Enter amount to topUP: ";
+    cin>>amt;
+
+    
+
 }

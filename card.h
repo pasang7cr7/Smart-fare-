@@ -37,4 +37,8 @@ class Card{
 };
 
 void registerCard(); // Declare the function so main.cpp knows about it
+void startride();
+void topupCard();
+
+
 #endif
