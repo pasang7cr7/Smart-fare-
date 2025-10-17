@@ -30,6 +30,7 @@ int main()
                 break;
             case 2:
                 // Top-up Card
+                topupCard();
                 break;
             case 3:
                 // Start Ride
@@ -47,6 +48,7 @@ int main()
                 break;
                 case 7:
                 //show card detail
+                
                 break;
 
                 case 8:

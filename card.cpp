@@ -38,7 +38,7 @@ int getNextCard()
 void registerCard()
 {
     string name, cardType, expiryDate;
-    double balance;
+    double balance = 0.0;
     int choicecard, age =0;
     int cardID = getNextCard();
 
@@ -112,6 +112,8 @@ void registerCard()
     // Convert cardID to string using sprintf
     char cardIDstr[10];
     sprintf(cardIDstr, "%d", cardID);
+
+    
 
     // Create Card object with collected details
     Card newCard(cardIDstr, name, cardType, balance, expiryDate);
@@ -223,31 +225,70 @@ void startride()
         return;
     }
 
-    if(fare = 0)
+    if(fare == 0)
     {
-        cout<<"\n Invalid ride details, ride cancelled! \n";
+        cout<<"\nInvalid ride details, ride cancelled! \n";
         return;
     }
-    cout<<"\n Fare for this ride is: Rs, "<<fare<<endl;
+    cout<<"\nFare for this ride is: Rs, "<<fare<<endl;
+    cout<<"\nYour new balance is "<<currentCard.balance-fare;
+
+    ifstream readfrom("card.txt");
+    ofstream temp("temp.txt");
+    string line2;
+
+    while(getline(readfrom, line2))
+    {
+        stringstream ss(line2);
+        string id, type, name, balanceStr, expiry;
+        getline(ss, id , ',');
+        getline(ss, name , ',');
+        getline(ss, type , ',');
+        getline(ss, balanceStr , ',');
+        getline(ss, expiry , ',');
+
+        double balance = stod(balanceStr);
+        if(id == currentCard.cardID )
+        {
+            //write updated balance
+            temp<<currentCard.cardID<<","<<currentCard.name<<","<<currentCard.cardType<<","<<currentCard.balance<<","<<currentCard.expiryDate<<endl;
+        }
+        else
+        {
+            temp<<id<<","<<name<<","<<type<<","<<balance<<","<<expiry<<endl;
+        }
+    }
+
+    readfrom.close();
+    temp.close();
+
+    remove("card.txt");
+    rename("temp.txt", "card.txt");
+
+    cout<<"card update";
+
 }
 
 
 void topupCard()
 {
-     string searchID;
-    cout<<"\nEnter your card ID: ";
-    cin>>searchID;
+    string searchID;
+    cout << "\nEnter your card ID: ";
+    cin >> searchID;
 
     ifstream searchfrom("card.txt");
     if(!searchfrom)
     {
-        cout<<"Error opening file."<<endl;
+        cout << "Error opening file." << endl;
         return;
     }
+
+    ofstream temp("temp.txt");
 
     string line;
     bool found = false;
     Card currentCard;
+
     while(getline(searchfrom, line))
     {
         stringstream ss(line);
@@ -258,30 +299,78 @@ void topupCard()
         getline(ss, balanceStr, ',');
         getline(ss, expiry, ',');
 
+        double balance = stod(balanceStr);
+
         if(id == searchID)
-    {
-        currentCard = Card(id, name,type ,stod(balanceStr), expiry);
-        found = true;
-        break;
+        {
+            currentCard = Card(id, name, type, balance, expiry);
+            found = true;
+
+            cout << "\nCard found. Details:" << endl << endl;
+            currentCard.display();
+            cout << endl;
+
+            double amt;
+            cout << "Enter amount to topUP: ";
+            cin >> amt;
+
+            string password;
+            char ch;
+            while(true)
+            {
+                cout << "\nEnter Password: ";
+                cin >> password;
+
+                if(password == "kacbit")
+                {
+                    currentCard.balance += amt;
+                    cout << "Top-up successful! ";
+                    cout << "New Balance: " << currentCard.balance << endl;
+                    break;
+                }
+                else
+                {
+                    cout << "Incorrect password!" << endl;
+                    cout<<"Do you want to try again? type Y or N: ";
+                    cin>>ch;
+                    ch = toupper(ch);
+                    if(ch == 'Y')
+                    {
+                        cout<<"Try again! ";
+                    }
+                    else if(ch == 'N')
+                    {
+                        cout<<"\nok!";
+                        return;
+                    }
+                    else{
+                        cout<<"\ninvalid selection! ";
+                        return;
+                    }
+                }
+            }
+
+            // Write the updated card to temp
+            temp << currentCard.cardID << "," << currentCard.name << "," 
+                 << currentCard.cardType << "," << currentCard.balance << "," 
+                 << currentCard.expiryDate << "\n";
+        }
+        else
+        {
+            // Write the original line for non-matching cards
+            temp << line << "\n";
+        }
     }
-    }
+
+    temp.close();
     searchfrom.close();
+
+    remove("card.txt");
+    rename("temp.txt", "card.txt");
 
     if(!found)
     {
-        cout<<"Card ID not found."<<endl;
+        cout << "Card ID not found." << endl;
         return;
     }
-
-    cout<<"\nCard found. Details:"<<endl<<endl;
-    currentCard.display();
-    cout<<endl;
-
-    double amt;
-
-    cout<<"Enter amount to topUP: ";
-    cin>>amt;
-
-    
-
 }

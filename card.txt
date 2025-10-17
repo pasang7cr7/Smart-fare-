@@ -1,2 +1,1 @@
-2082001,Pasang Tamang,student,0,2026-10-11
-2082002,Random,student,0,2026-10-11
+2082001,Pasang Tamang,student,100,2026-10-17

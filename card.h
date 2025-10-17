@@ -19,7 +19,7 @@ class Card{
 
         Card() : balance(0.0)
         {
-
+                
         }
 
         //function tro display card details
