@@ -27,7 +27,7 @@ class Card{
         void display()
         {
          cout<<endl;   
-            cout << "Card Details:\n";
+            cout << "-----Card Details-----\n";
         cout << "Card ID: " << cardID << endl;         // Prints card ID
         cout << "Name: " << name << endl;              // Prints cardholder's name
         cout << "Type: " << cardType << endl;          // Prints card type
@@ -39,6 +39,7 @@ class Card{
 void registerCard(); // Declare the function so main.cpp knows about it
 void startride();
 void topupCard();
+void cardDetails();
 
 
 #endif

@@ -11,7 +11,11 @@ bool isValidCardType(const string& type); //for valid card type
 
 //double calculateFare(const string& cardType, double distance); //fare calculation based on card type and distance   
 
-double calculateFare(const string& cardType, const string& start, const string& end); //fare calculation based on card type and distance
+double calculateFare(const string& cardType, int distance); //fare calculation based on card type and distance
+
+void saveRideHistory(const string& cardID, const string& name, const string& cardType , const string& startStop, const string& endStop, double fare );
+
+void viewRideHistory(const string& cardID);
 
 #endif
 

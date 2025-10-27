@@ -127,23 +127,27 @@ void registerCard()
     newCard.display(); // Show card details
 }
 
+
+
 void startride()
 {
     string searchID;
-    cout<<"\nEnter your card ID: ";
-    cin>>searchID;
+    cout << "\nEnter your card ID: ";
+    cin >> searchID;
 
-    ifstream searchfrom("card.txt");
-    if(!searchfrom)
+    ifstream fin("card.txt");
+    if(!fin)
     {
-        cout<<"Error opening file."<<endl;
+        cout << "Error opening file." << endl;
         return;
     }
 
     string line;
     bool found = false;
     Card currentCard;
-    while(getline(searchfrom, line))
+
+    // Find the card
+    while(getline(fin, line))
     {
         stringstream ss(line);
         string id, name, type, balanceStr, expiry;
@@ -154,28 +158,26 @@ void startride()
         getline(ss, expiry, ',');
 
         if(id == searchID)
-    {
-        currentCard = Card(id, name,type ,stod(balanceStr), expiry);
-        found = true;
-        break;
+        {
+            currentCard = Card(id, name, type, stod(balanceStr), expiry);
+            found = true;
+            break;
+        }
     }
-    }
-    searchfrom.close();
+    fin.close();
 
     if(!found)
     {
-        cout<<"Card ID not found."<<endl;
+        cout << "Card ID not found." << endl;
         return;
     }
 
-    cout<<"\nCard found. Details:"<<endl<<endl;
+    cout << "\nCard found. Details:\n" << endl;
     currentCard.display();
-    cout<<endl;
+    cout << endl;
 
-
-    //now start ride process
-
-    vector<string> stops = {
+    // Stops
+     vector<string> stops = {
         "kalanki",
         "balkhu",
         "Ekantakuna",
@@ -200,12 +202,12 @@ void startride()
     }
 
     int startind, endind;
-    cout<<"\n Enter starting point: ";
+    cout<<"\nEnter starting stop: ";
     cin>>startind;
 
     
 
-    cout<<"\n Enter ending stop: ";
+    cout<<"Enter ending stop: ";
     cin>>endind;
 
     if(startind<1 || endind<1 || startind > stops.size() || endind > stops.size())
@@ -214,12 +216,24 @@ void startride()
         return;
     }
 
+    
     string startStop = stops[startind-1];
     string endStop = stops[endind-1];
 
-    double fare = calculateFare(currentCard.cardType, startStop, endStop);
+   
 
-    if(currentCard.balance<fare || currentCard.balance == 0)
+   
+    
+int distance = abs(endind - startind);
+if(distance == 0)
+{
+    cout<<"Starting and ending stops can't be same! ";
+    return;
+}
+
+double fare = calculateFare(currentCard.cardType, distance);
+
+ if(currentCard.balance<fare || currentCard.balance == 0)
     {
         cout<<"\nYou dont have sufficient balance! Please recharge first! ";
         return;
@@ -230,43 +244,50 @@ void startride()
         cout<<"\nInvalid ride details, ride cancelled! \n";
         return;
     }
-    cout<<"\nFare for this ride is: Rs, "<<fare<<endl;
-    cout<<"\nYour new balance is "<<currentCard.balance-fare;
 
-    ifstream readfrom("card.txt");
+    // Deduct fare
+    currentCard.balance -= fare;
+    cout << "\nRide started! Rs. " << fare << " deducted. Remaining balance: Rs. " 
+         << currentCard.balance << endl;
+
+         saveRideHistory(currentCard.cardID, currentCard.name, currentCard.cardType, startStop, endStop, fare);
+
+    // Update card.txt safely
+    ifstream fin2("card.txt");
     ofstream temp("temp.txt");
     string line2;
 
-    while(getline(readfrom, line2))
+    while(getline(fin2, line2))
     {
         stringstream ss(line2);
-        string id, type, name, balanceStr, expiry;
-        getline(ss, id , ',');
-        getline(ss, name , ',');
-        getline(ss, type , ',');
-        getline(ss, balanceStr , ',');
-        getline(ss, expiry , ',');
+        string id, name, type, balanceStr, expiry;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, balanceStr, ',');
+        getline(ss, expiry, ',');
 
         double balance = stod(balanceStr);
-        if(id == currentCard.cardID )
+
+        if(id == currentCard.cardID)
         {
-            //write updated balance
-            temp<<currentCard.cardID<<","<<currentCard.name<<","<<currentCard.cardType<<","<<currentCard.balance<<","<<currentCard.expiryDate<<endl;
+            temp << currentCard.cardID << "," << currentCard.name << "," 
+                 << currentCard.cardType << "," << currentCard.balance << "," 
+                 << currentCard.expiryDate << "\n";
         }
         else
         {
-            temp<<id<<","<<name<<","<<type<<","<<balance<<","<<expiry<<endl;
+            temp << id << "," << name << "," << type << "," << balance << "," << expiry << "\n";
         }
     }
 
-    readfrom.close();
+    fin2.close();
     temp.close();
 
     remove("card.txt");
     rename("temp.txt", "card.txt");
 
-    cout<<"card update";
-
+    cout << "\nCard updated successfully!\n";
 }
 
 
@@ -374,3 +395,53 @@ void topupCard()
         return;
     }
 }
+
+void cardDetails()
+{
+     string searchID;
+    cout << "\nEnter your card ID: ";
+    cin >> searchID;
+
+    ifstream fin("card.txt");
+    if(!fin)
+    {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    string line;
+    bool found = false;
+    Card currentCard;
+
+    // Find the card
+    while(getline(fin, line))
+    {
+        stringstream ss(line);
+        string id, name, type, balanceStr, expiry;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, balanceStr, ',');
+        getline(ss, expiry, ',');
+
+        if(id == searchID)
+        {
+            currentCard = Card(id, name, type, stod(balanceStr), expiry);
+            found = true;
+            break;
+        }
+    }
+    fin.close();
+
+    if(!found)
+    {
+        cout << "Card ID not found." << endl;
+        return;
+    }
+
+    cout << "\nCard found.\n" << endl;
+    currentCard.display();
+    cout << endl;
+}
+
+

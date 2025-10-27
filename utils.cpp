@@ -4,6 +4,9 @@
 #include <string>
 #include<vector>
 #include<cmath>
+#include<fstream>
+#include<sstream>
+#include "time.h"
 
 
 using namespace std;
@@ -31,74 +34,98 @@ bool  isNumber(const string& str )
     return true;
 }
 
-// bool isValidCardType(const string & type)
-// {
-//     string lowertype = type;
-//     transform(lowertype.begin(), lowertype.end(), lowertype.begin(), ::tolower);
-
-//     return (lowertype == "normal" || lowertype == "student" || lowertype == "senior");
-// }
 
 
 
-double calculateFare(const string& cardType, const string& start, const string& end)
+
+
+double calculateFare(const string& cardType, int distance)
 {
-    vector<string> stops = {
-        "kalanki",
-        "balkhu",
-        "Ekantakuna",
-        "Satdobato",
-        "Gwarko",
-        "Koteshwor",
-        "tinkune",
-        "Sinamangal",
-        "Gaushala",
-        "Chabahil",
-        "Sukedhara",
-        "Maharajgunj",
-        "balaju"
-    };
-    int startindex = -1;
-    int endindex = -1;
-
-    for(int i=0; i<stops.size(); i++)
+    if (distance <= 0)
     {
-        if(stops[i] == start)
-        {
-            startindex = i;
-        }
-        if(stops[i] == end)
-        {
-            endindex = i;
-        }
+        cout << "Invalid distance entered.\n";
+        return 0;
     }
 
-    if(startindex == -1 || endindex == -1 || startindex >= endindex)
-    {
-        cout << "Invalid start or end stop." << endl;
-        return 0; // Indicate an error
-    }
-    int numStops = abs(endindex - startindex);
+    cout << "Number of stops: " << distance << endl;
 
-    cout<<"Number of stops: "<<numStops<<endl;
-
-    double farePerStop = 5.0;
-    double baseFare = numStops * farePerStop;
+    double farePerStop = 5.0; // Rs. 5 per stop
+    double baseFare = distance * farePerStop;
     double finalFare = baseFare;
 
-   
-
-    if(cardType == "student")
+    // Apply discounts
+    if (cardType == "student")
     {
-        finalFare = baseFare * 0.5;
+        finalFare = baseFare * 0.5; // 50% discount
     }
-    else if(cardType == "elder citizen")
+    else if (cardType == "Elder Citizen" || cardType == "elder citizen")
     {
-        finalFare = baseFare * 0.3;
+        finalFare = baseFare * 0.3; // 70% discount (30% pay)
     }
 
-    cout<<"your fare is: "<<finalFare<<endl;
+    cout << "Your fare is: Rs. " << finalFare << endl;
     return finalFare;
 }
 
+void saveRideHistory(const string& cardID, const string& name, const string& cardType , const string& startStop, const string& endStop, double fare )
+{
+    ofstream writeto("Ride_History.txt", ios::app);
+    if(!writeto)
+    {
+        cout<<"Unable to opem file! ";
+        return;
+    }
 
+    string dateTime = dateWithTime();
+
+    writeto<<cardID<<","<<name<<","<<cardType<<","<<startStop<<","<<endStop<< 
+    ","<<fare<<","<<dateTime<<endl;
+
+    writeto.close();
+    cout<<"Ride History saved! ";
+
+}
+
+void viewRideHistory(const string& cardID)
+{
+    ifstream readfrom("Ride_History.txt");
+    if(!readfrom)
+    {
+        cout<<"Unable to open file! ";
+        return;
+    }
+    string line;
+    bool found = false;
+    cout<<"\n------Ride History for Card ID: "<<cardID<<"------\n";
+
+    while(getline(readfrom, line))
+    {
+        stringstream ss(line);
+        string id, name, type, startStop, endStop, farestr, date,time;
+
+        getline(ss, id , ',');
+        getline(ss, name , ',');
+        getline(ss, type , ',');
+        getline(ss, startStop , ',');
+        getline(ss, endStop, ',');
+        getline(ss, farestr, ',');
+        getline(ss,date, ',');
+        getline(ss,time, ',');
+
+        if(id == cardID)
+        {
+            found = true;
+            cout<< "Ride: "<<startStop<<" -> "<<endStop<<", Fare: Rs. "<<farestr << ", Date: "<<date<<time<<endl;
+        }
+
+       
+
+    }
+     if(!found)
+        {
+            cout<<"No ride for this card found! "<<endl;
+
+        }
+        readfrom.close();
+
+}

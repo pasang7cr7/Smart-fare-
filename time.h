@@ -5,4 +5,5 @@
 using namespace std;
 
 string getcurrentdate();
+string dateWithTime();
 #endif

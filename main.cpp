@@ -3,6 +3,7 @@
 #include "TIME.h" // Corrected header file name
 #include "card.h"
 #include "utils.h"
+#include "admin.h"
 
 using namespace std;
 
@@ -18,8 +19,8 @@ int main()
 
     while(1)
     {
-        cout<<endl;
-        cout << "\n1. Register Card\n2. Top-up Card\n3. Start Ride\n4. Show Card Ride History\n5. Admin Panel\n6. Exit\n7. Show card details\n8. get time\n9. validation\n\nChoice: ";
+        cout<<endl<<"-----Main Menu-----";
+        cout << "\n1. Register Card\n2. Top-up Card\n3. Start Ride\n4. Card Details\n5. Ride History\n6. Admin Panel\n7. Show card details\n8. get time\n9. validation\n\nChoice: ";
         cin>>choice;
 
         switch(choice)
@@ -37,19 +38,32 @@ int main()
                 startride();
                 break;
             case 4:
-                // Show Card Ride History
+                // Show Card Details
+                cardDetails();
                 break;
             case 5:
-                // Admin Panel
+                // Ride History
+                {
+                    string id;
+                cout<<"Enter your card id: ";
+                cin>>id;
+                viewRideHistory(id);
                 break;
+                }
+                
             case 6:
+                //Admin Panel
+                adminMenu();
+
+                break;
+                
+                case 7:
+                {
                 cout << "Thank you for using the Smart Card System!\n";
                 return 0;
                 break;
-                case 7:
-                //show card detail
-                
-                break;
+                }
+               
 
                 case 8:
                 {
@@ -69,6 +83,12 @@ int main()
                     {
                         cout<<val<<" is not a valid number."<<endl;
                     }
+                    break;
+                }
+                case 10:
+                {
+                    cout << "Current date: " << dateWithTime() << endl;
+                    break;
                 }
 
             default:

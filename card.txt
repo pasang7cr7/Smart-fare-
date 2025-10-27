@@ -1,1 +1,2 @@
-2082001,Pasang Tamang,student,100,2026-10-17
+2082001,Pasang Tamang,student,402.5,2026-10-17
+2082002,Ramesh Boss,normal,925,2026-10-27
