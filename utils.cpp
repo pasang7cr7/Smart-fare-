@@ -17,8 +17,9 @@ bool  isNumber(const string& str )
 
     int point = 0;
 
-    for(char c : str)
+    for(size_t i = 0; i < str.length(); ++i)
     {
+        char c = str[i];
         if(c == '.')
         {
             point++;
@@ -69,7 +70,7 @@ double calculateFare(const string& cardType, int distance)
 
 void saveRideHistory(const string& cardID, const string& name, const string& cardType , const string& startStop, const string& endStop, double fare )
 {
-    ofstream writeto("Ride_History.txt", ios::app);
+    ofstream writeto("Ride_History.csv", ios::app);
     if(!writeto)
     {
         cout<<"Unable to opem file! ";
@@ -88,7 +89,7 @@ void saveRideHistory(const string& cardID, const string& name, const string& car
 
 void viewRideHistory(const string& cardID)
 {
-    ifstream readfrom("Ride_History.txt");
+    ifstream readfrom("Ride_History.csv");
     if(!readfrom)
     {
         cout<<"Unable to open file! ";
@@ -105,7 +106,6 @@ void viewRideHistory(const string& cardID)
 
         getline(ss, id , ',');
         getline(ss, name , ',');
-        getline(ss, type , ',');
         getline(ss, startStop , ',');
         getline(ss, endStop, ',');
         getline(ss, farestr, ',');
@@ -118,7 +118,7 @@ void viewRideHistory(const string& cardID)
             cout<< "Ride: "<<startStop<<" -> "<<endStop<<", Fare: Rs. "<<farestr << ", Date: "<<date<<time<<endl;
         }
 
-       
+
 
     }
      if(!found)
@@ -127,5 +127,8 @@ void viewRideHistory(const string& cardID)
 
         }
         readfrom.close();
+        cout << "\nPress Enter to continue...";
+        cin.ignore();
+        cin.get();
 
 }

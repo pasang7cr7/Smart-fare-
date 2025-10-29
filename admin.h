@@ -6,7 +6,8 @@ void adminMenu();
 void viewAllCards();
 void viewAllRideHistory();
 void rechargeCardByAdmin();
-void deleteOrBlockCard();
+void blockCard();
+void unBlockCard();
 
 
 #endif

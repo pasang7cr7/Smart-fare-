@@ -9,18 +9,32 @@ using namespace std;
 
 int main()
 {
-    cout<<"-----------------------------------"<<endl;
-    cout<<"|   Welcome to Smart Fare system   |"<<endl;
-    cout<<"-----------------------------------"<<endl;
+    cout<<"==================================="<<endl;
+    cout<<"||                               ||"<<endl;
+    cout<<"||     SMART FARE SYSTEM         ||"<<endl;
+    cout<<"||                               ||"<<endl;
+    cout<<"==================================="<<endl;
+    cout<<"Welcome to the Smart Fare System!"<<endl;
+    cout<<"Your reliable transportation companion."<<endl<<endl;
 
     int choice;
 
-    
-
+    system("cls");
     while(1)
     {
-        cout<<endl<<"-----Main Menu-----";
-        cout << "\n1. Register Card\n2. Top-up Card\n3. Start Ride\n4. Card Details\n5. Ride History\n6. Admin Panel\n7. Show card details\n8. get time\n9. validation\n\nChoice: ";
+
+        cout<<"==================================="<<endl;
+        cout<<"||         MAIN MENU             ||"<<endl;
+        cout<<"==================================="<<endl;
+        cout << "1. Register New Card"<<endl;
+        cout << "2. Top-up Card Balance"<<endl;
+        cout << "3. Start a Ride"<<endl;
+        cout << "4. View Card Details"<<endl;
+        cout << "5. View Ride History"<<endl;
+        cout << "6. Admin Panel"<<endl;
+        cout << "7. Exit System"<<endl;
+        cout << "==================================="<<endl;
+        cout << "Enter your choice (1-7): ";
         cin>>choice;
 
         switch(choice)
@@ -57,9 +71,17 @@ int main()
 
                 break;
                 
+
                 case 7:
                 {
-                cout << "Thank you for using the Smart Card System!\n";
+                system("cls");
+                cout<<"==================================="<<endl;
+                cout<<"||                               ||"<<endl;
+                cout<<"||     THANK YOU FOR USING       ||"<<endl;
+                cout<<"||     SMART FARE SYSTEM         ||"<<endl;
+                cout<<"||                               ||"<<endl;
+                cout<<"==================================="<<endl;
+                cout<<"Goodbye! Have a great day!"<<endl;
                 return 0;
                 break;
                 }
@@ -92,7 +114,10 @@ int main()
                 }
 
             default:
-                cout<<"Invalid choice! Please try again."<<endl;
+                cout<<"==================================="<<endl;
+                cout<<"||     INVALID CHOICE!          ||"<<endl;
+                cout<<"==================================="<<endl;
+                cout<<"Please select a valid option (1-7)."<<endl;
            
         }
          

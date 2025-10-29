@@ -15,7 +15,7 @@ using namespace std;
 //funtion to create id
 int getNextCard()
 {
-    ifstream fin("card.txt");
+    ifstream fin("card.csv");
     string line, lastId = "2082000";
     while(getline(fin, line))
     {
@@ -37,16 +37,25 @@ int getNextCard()
 
 void registerCard()
 {
-    string name, cardType, expiryDate;
+    string name, cardType, expiryDate,status;
     double balance = 0.0;
     int choicecard, age =0;
     int cardID = getNextCard();
 
-    cout <<"\nEnter name: ";
+    cout<<"==================================="<<endl;
+    cout<<"||     CARD REGISTRATION         ||"<<endl;
+    cout<<"==================================="<<endl;
+    cout <<"Enter your full name: ";
     cin.ignore(); // To ignore any leftover newline character in the input buffer
     getline(cin, name);
 
-     cout << "\nSelect card type:\n1. Normal\n2. Student\n3. Elder Citizen\nChoice: ";
+     cout << "\n==================================="<<endl;
+     cout << "Select card type:"<<endl;
+     cout << "1. Normal"<<endl;
+     cout << "2. Student"<<endl;
+     cout << "3. Elder Citizen"<<endl;
+     cout << "==================================="<<endl;
+     cout << "Enter your choice (1-3): ";
      cin >> choicecard;
 
      if(choicecard == 1)
@@ -119,12 +128,17 @@ void registerCard()
     Card newCard(cardIDstr, name, cardType, balance, expiryDate);
 
      // Save card details to file
-    ofstream fout("card.txt", ios::app); // Opens file in append mode
-    fout << newCard.cardID << "," << newCard.name << "," << newCard.cardType << "," << newCard.balance << "," << newCard.expiryDate << endl;
+    ofstream fout("card.csv", ios::app); // Opens file in append mode
+    fout << newCard.cardID << "," << newCard.name << "," << newCard.cardType << "," << newCard.balance << "," << newCard.expiryDate <<","<<newCard.status<< endl;
     fout.close(); // Closes the file
 
-    cout << "\nCard registered successfully!\n"; // Success message
+    cout << "\n==================================="<<endl;
+    cout << "Card registered successfully!"<<endl;
+    cout << "==================================="<<endl;
     newCard.display(); // Show card details
+    cout << "\nPress Enter to continue...";
+    cin.ignore();
+    cin.get();
 }
 
 
@@ -135,7 +149,7 @@ void startride()
     cout << "\nEnter your card ID: ";
     cin >> searchID;
 
-    ifstream fin("card.txt");
+    ifstream fin("card.csv");
     if(!fin)
     {
         cout << "Error opening file." << endl;
@@ -150,19 +164,30 @@ void startride()
     while(getline(fin, line))
     {
         stringstream ss(line);
-        string id, name, type, balanceStr, expiry;
+        string id, name, type, balanceStr, expiry,status;
         getline(ss, id, ',');
         getline(ss, name, ',');
         getline(ss, type, ',');
         getline(ss, balanceStr, ',');
         getline(ss, expiry, ',');
+        getline(ss, status, ',');
+        
 
         if(id == searchID)
         {
-            currentCard = Card(id, name, type, stod(balanceStr), expiry);
+            currentCard = Card(id, name, type, stod(balanceStr), expiry,status);
             found = true;
+
+            if(currentCard.status == "blocked")
+            {
+                cout<<"You Can't start ride! Your card is blocked!"<<endl;
+                cout<<"Contact to customer care!\nContact: 9841222122\nEmail:Fakecustomercare@pmail.com\n";
+                return;
+            }
+
             break;
         }
+       
     }
     fin.close();
 
@@ -253,8 +278,8 @@ double fare = calculateFare(currentCard.cardType, distance);
          saveRideHistory(currentCard.cardID, currentCard.name, currentCard.cardType, startStop, endStop, fare);
 
     // Update card.txt safely
-    ifstream fin2("card.txt");
-    ofstream temp("temp.txt");
+    ifstream fin2("card.csv");
+    ofstream temp("temp.csv");
     string line2;
 
     while(getline(fin2, line2))
@@ -284,10 +309,13 @@ double fare = calculateFare(currentCard.cardType, distance);
     fin2.close();
     temp.close();
 
-    remove("card.txt");
-    rename("temp.txt", "card.txt");
+    remove("card.csv");
+    rename("temp.csv", "card.csv");
 
     cout << "\nCard updated successfully!\n";
+    cout << "\nPress Enter to continue...";
+    cin.ignore();
+    cin.get();
 }
 
 
@@ -297,14 +325,14 @@ void topupCard()
     cout << "\nEnter your card ID: ";
     cin >> searchID;
 
-    ifstream searchfrom("card.txt");
+    ifstream searchfrom("card.csv");
     if(!searchfrom)
     {
         cout << "Error opening file." << endl;
         return;
     }
 
-    ofstream temp("temp.txt");
+    ofstream temp("temp.csv");
 
     string line;
     bool found = false;
@@ -313,23 +341,34 @@ void topupCard()
     while(getline(searchfrom, line))
     {
         stringstream ss(line);
-        string id, name, type, balanceStr, expiry;
+        string id, name, type, balanceStr, expiry,status;
         getline(ss, id, ',');
         getline(ss, name, ',');
         getline(ss, type, ',');
         getline(ss, balanceStr, ',');
         getline(ss, expiry, ',');
+        getline(ss, status, ',');
+
 
         double balance = stod(balanceStr);
 
+       
+
         if(id == searchID)
         {
-            currentCard = Card(id, name, type, balance, expiry);
+            currentCard = Card(id, name, type, balance, expiry,status);
             found = true;
 
             cout << "\nCard found. Details:" << endl << endl;
             currentCard.display();
             cout << endl;
+
+            if(currentCard.status == "blocked")
+            {
+                cout<<"You Can't topUP! Your card is blocked!"<<endl;
+                cout<<"Contact to customer care!\nContact: 9841222122\nEmail:Fakecustomercare@pmail.com\n";
+                return;
+            }
 
             double amt;
             cout << "Enter amount to topUP: ";
@@ -374,7 +413,7 @@ void topupCard()
             // Write the updated card to temp
             temp << currentCard.cardID << "," << currentCard.name << "," 
                  << currentCard.cardType << "," << currentCard.balance << "," 
-                 << currentCard.expiryDate << "\n";
+                 << currentCard.expiryDate <<","<< currentCard.status<<endl;
         }
         else
         {
@@ -386,8 +425,8 @@ void topupCard()
     temp.close();
     searchfrom.close();
 
-    remove("card.txt");
-    rename("temp.txt", "card.txt");
+    remove("card.csv");
+    rename("temp.csv", "card.csv");
 
     if(!found)
     {
@@ -402,7 +441,7 @@ void cardDetails()
     cout << "\nEnter your card ID: ";
     cin >> searchID;
 
-    ifstream fin("card.txt");
+    ifstream fin("card.csv");
     if(!fin)
     {
         cout << "Error opening file." << endl;
@@ -417,16 +456,17 @@ void cardDetails()
     while(getline(fin, line))
     {
         stringstream ss(line);
-        string id, name, type, balanceStr, expiry;
+        string id, name, type, balanceStr, expiry,status;
         getline(ss, id, ',');
         getline(ss, name, ',');
         getline(ss, type, ',');
         getline(ss, balanceStr, ',');
         getline(ss, expiry, ',');
+        getline(ss, status, ',');
 
         if(id == searchID)
         {
-            currentCard = Card(id, name, type, stod(balanceStr), expiry);
+            currentCard = Card(id, name, type, stod(balanceStr), expiry,status);
             found = true;
             break;
         }
@@ -439,9 +479,11 @@ void cardDetails()
         return;
     }
 
-    cout << "\nCard found.\n" << endl;
+    cout << "\nCard found." << endl;
     currentCard.display();
-    cout << endl;
+    cout << "\nPress Enter to continue...";
+    cin.ignore();
+    cin.get();
 }
 
 
