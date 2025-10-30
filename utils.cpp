@@ -102,20 +102,30 @@ void viewRideHistory(const string& cardID)
     while(getline(readfrom, line))
     {
         stringstream ss(line);
-        string id, name, type, startStop, endStop, farestr, date,time;
-
-        getline(ss, id , ',');
-        getline(ss, name , ',');
-        getline(ss, startStop , ',');
+      string id, name, type, balanceStr, expiry, status,startStop,endStop,fareStr,date,time;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, startStop, ',');
         getline(ss, endStop, ',');
-        getline(ss, farestr, ',');
-        getline(ss,date, ',');
-        getline(ss,time, ',');
+        getline(ss, fareStr, ',');
+        getline(ss, date, ',');
+        getline(ss, time, ',');
 
         if(id == cardID)
         {
             found = true;
-            cout<< "Ride: "<<startStop<<" -> "<<endStop<<", Fare: Rs. "<<farestr << ", Date: "<<date<<time<<endl;
+           /*   cout << "Card ID: " << id << endl;
+            cout << "Name: " << name << endl;
+            cout << "Type: " << type << endl;
+            cout << "Route: " << startStop << " -> " << endStop << endl;
+            cout << "Fare: Rs. " << fareStr << endl;
+            cout << "Date: " << date << endl;
+            cout << "Time: " << time << endl;
+            cout << "===================================" << endl; */
+            cout<<id<<","<<name<<","<<type<<","<<startStop<<"->"<<endStop<<", Rs:"<<fareStr<<"," <<date<<","<<time<<endl;
+           
+
         }
 
 

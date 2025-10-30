@@ -9,6 +9,7 @@ using namespace std;
 
 int main()
 {
+     
     cout<<"==================================="<<endl;
     cout<<"||                               ||"<<endl;
     cout<<"||     SMART FARE SYSTEM         ||"<<endl;
@@ -17,9 +18,13 @@ int main()
     cout<<"Welcome to the Smart Fare System!"<<endl;
     cout<<"Your reliable transportation companion."<<endl<<endl;
 
+     cout << "\nPress Enter to continue...";
+    cin.ignore();
+    
+
     int choice;
 
-    system("cls");
+   system("cls");
     while(1)
     {
 

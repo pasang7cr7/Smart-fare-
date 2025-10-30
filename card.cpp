@@ -260,7 +260,7 @@ double fare = calculateFare(currentCard.cardType, distance);
 
  if(currentCard.balance<fare || currentCard.balance == 0)
     {
-        cout<<"\nYou dont have sufficient balance! Please recharge first! ";
+        cout<<"\nYou dont have sufficient balance! Please recharge first! \n";
         return;
     }
 
@@ -285,12 +285,13 @@ double fare = calculateFare(currentCard.cardType, distance);
     while(getline(fin2, line2))
     {
         stringstream ss(line2);
-        string id, name, type, balanceStr, expiry;
+        string id, name, type, balanceStr, expiry,status;
         getline(ss, id, ',');
         getline(ss, name, ',');
         getline(ss, type, ',');
         getline(ss, balanceStr, ',');
         getline(ss, expiry, ',');
+        getline(ss, status, ',');
 
         double balance = stod(balanceStr);
 
@@ -298,7 +299,7 @@ double fare = calculateFare(currentCard.cardType, distance);
         {
             temp << currentCard.cardID << "," << currentCard.name << "," 
                  << currentCard.cardType << "," << currentCard.balance << "," 
-                 << currentCard.expiryDate << "\n";
+                 << currentCard.expiryDate <<","<<currentCard.status<<endl;
         }
         else
         {
