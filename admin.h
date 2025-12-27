@@ -8,6 +8,7 @@ void viewAllRideHistory();
 void rechargeCardByAdmin();
 void blockCard();
 void unBlockCard();
-
+void manipulateExpiry();
+void removeCard();
 
 #endif

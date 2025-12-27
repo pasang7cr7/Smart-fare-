@@ -7,6 +7,7 @@
 #include<fstream>
 #include<sstream>
 #include "time.h"
+#include<conio.h>
 
 
 using namespace std;
@@ -141,4 +142,49 @@ void viewRideHistory(const string& cardID)
         cin.ignore();
         cin.get();
 
+}
+
+
+string getPassword()
+{
+    string password;
+    char ch;
+
+    cout << "Enter Password: ";
+
+    while (true)
+    {
+        ch = _getch();
+
+        if (ch == 13) // Enter key
+        {
+            break;
+        }
+        else if (ch == 8) // Backspace key
+        {
+            if (!password.empty())
+            {
+                password.pop_back();
+                cout << "\b \b"; // Move cursor back, print space, move back again
+            }
+        }
+        else
+        {
+            password.push_back(ch);
+            cout << '*';
+        }
+    }
+    cout << endl;
+    return password;
+}
+
+bool isCardExpired(const string& expiryDate)
+{
+    string currentDate = getcurrentdate();
+    // Compare dates in YYYY-MM-DD format
+    if (expiryDate <= currentDate)
+    {
+        return true;
+    }
+    return false;
 }

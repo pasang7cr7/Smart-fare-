@@ -12,7 +12,7 @@ int main()
      
     cout<<"==================================="<<endl;
     cout<<"||                               ||"<<endl;
-    cout<<"||     SMART FARE SYSTEM         ||"<<endl;
+    cout<<"||     SMART FARE SIMULATION     ||"<<endl;
     cout<<"||                               ||"<<endl;
     cout<<"==================================="<<endl;
     cout<<"Welcome to the Smart Fare System!"<<endl;
@@ -36,10 +36,11 @@ int main()
         cout << "3. Start a Ride"<<endl;
         cout << "4. View Card Details"<<endl;
         cout << "5. View Ride History"<<endl;
-        cout << "6. Admin Panel"<<endl;
-        cout << "7. Exit System"<<endl;
+        cout << "6. Renew Card"<<endl;
+        cout << "7. Admin Panel"<<endl;
+        cout << "8. Exit System"<<endl;
         cout << "==================================="<<endl;
-        cout << "Enter your choice (1-7): ";
+        cout << "Enter your choice (1-8): ";
         cin>>choice;
 
         switch(choice)
@@ -69,21 +70,24 @@ int main()
                 viewRideHistory(id);
                 break;
                 }
-                
+
             case 6:
+                // Renew Card
+                renewCard(false);
+                break;
+
+            case 7:
                 //Admin Panel
                 adminMenu();
-
                 break;
-                
 
-                case 7:
+            case 8:
                 {
                 system("cls");
                 cout<<"==================================="<<endl;
                 cout<<"||                               ||"<<endl;
                 cout<<"||     THANK YOU FOR USING       ||"<<endl;
-                cout<<"||     SMART FARE SYSTEM         ||"<<endl;
+                cout<<"||     SMART FARE SIMULATION     ||"<<endl;
                 cout<<"||                               ||"<<endl;
                 cout<<"==================================="<<endl;
                 cout<<"Goodbye! Have a great day!"<<endl;
@@ -92,11 +96,11 @@ int main()
                 }
                
 
-                case 8:
-                {
-                    cout << "Current date: " << getcurrentdate() << endl;
-                    break;
-                }
+                // case 8:
+                // {
+                //     cout << "Current date: " << getcurrentdate() << endl;
+                //     break;
+                // }
                 case 9:
                 {
                     string val;
@@ -122,7 +126,7 @@ int main()
                 cout<<"==================================="<<endl;
                 cout<<"||     INVALID CHOICE!          ||"<<endl;
                 cout<<"==================================="<<endl;
-                cout<<"Please select a valid option (1-7)."<<endl;
+                cout<<"Please select a valid option (1-8)."<<endl;
            
         }
          

@@ -1,5 +1,7 @@
+
 #include "card.h"
 #include "utils.h"
+#include "admin.h"
 #include<iostream>
 #include<fstream>
 #include <cstdlib>
@@ -8,6 +10,8 @@
 #include <cstdio> // Add this at the top for sscanf and sprintf
 #include<sstream>
 #include<vector>
+#include<limits>
+#include <windows.h>
 
 using namespace std;
 
@@ -48,6 +52,10 @@ void registerCard()
     cout <<"Enter your full name: ";
     cin.ignore(); // To ignore any leftover newline character in the input buffer
     getline(cin, name);
+    if(name.empty()) {
+        cout << "Name cannot be empty. Registration failed.\n";
+        return;
+    }
 
      cout << "\n==================================="<<endl;
      cout << "Select card type:"<<endl;
@@ -56,7 +64,11 @@ void registerCard()
      cout << "3. Elder Citizen"<<endl;
      cout << "==================================="<<endl;
      cout << "Enter your choice (1-3): ";
-     cin >> choicecard;
+    while (!(cin >> choicecard) || choicecard < 1 || choicecard > 3) {
+        cout << "Invalid input. Please enter a number between 1 and 3: ";
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 
      if(choicecard == 1)
      {
@@ -65,7 +77,7 @@ void registerCard()
      else if(choicecard == 2)
     {
         string codeInput;
-        cout<<"Enter your student code: ";
+        cout<<"Enter your student code (must start with 'kac' followed by roll number): ";
         cin>>codeInput;
 
         if(codeInput.substr(0,3) == "kac" && codeInput.length() > 3)
@@ -75,7 +87,7 @@ void registerCard()
         }
         else
         {
-          cout << "\nInvalid student keyword or roll number. Registration failed.\n";
+          cout << "\nInvalid student code. Must start with 'kac'. Registration failed.\n";
             return;
          }
 
@@ -83,11 +95,15 @@ void registerCard()
     else if(choicecard == 3)
     {
         cout<<"Enter your age: ";
-        cin>>age;
+        while (!(cin >> age) || age < 0) {
+            cout << "Invalid age. Please enter a positive number: ";
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
 
         if(age >=60)
         {
-            cardType = "Ender Citizen";
+            cardType = "elder citizen";
             cout<<"\nAge validation successful."<<endl;
         }
         else
@@ -95,10 +111,6 @@ void registerCard()
             cout<<"\nAge must be 60 or above for Elder Citizen card. Registration failed.\n";
             return;
         }
-    }
-    else{
-        cout<<"\nInvalid card type choice. Registration failed.\n";
-        return;
     }
 
     
@@ -175,13 +187,22 @@ void startride()
 
         if(id == searchID)
         {
-            currentCard = Card(id, name, type, stod(balanceStr), expiry,status);
+            // Check if card is expired and update status
+            string cardStatus = status;
+            if(isCardExpired(expiry))
+            {
+                cardStatus = "expired";
+            }
+            else
+            {
+                cardStatus = "active";
+            }
+            currentCard = Card(id, name, type, stod(balanceStr), expiry, cardStatus);
             found = true;
 
-            if(currentCard.status == "blocked")
+            if(currentCard.status == "expired")
             {
-                cout<<"You Can't start ride! Your card is blocked!"<<endl;
-                cout<<"Contact to customer care!\nContact: 9841222122\nEmail:Fakecustomercare@pmail.com\n";
+                cout<<"Your card has expired! Please renew your card."<<endl;
                 return;
             }
 
@@ -200,6 +221,17 @@ void startride()
     cout << "\nCard found. Details:\n" << endl;
     currentCard.display();
     cout << endl;
+
+    // Check balance before proceeding
+    if(currentCard.balance == 0)
+    {
+        cout << "You have zero balance. Cannot start ride. Please recharge first!" << endl;
+        return;
+    }
+    else if(currentCard.balance < 100)
+    {
+        cout << "Warning: You are running out of balance. Please top-up soon." << endl;
+    }
 
     // Stops
      vector<string> stops = {
@@ -227,18 +259,18 @@ void startride()
     }
 
     int startind, endind;
-    cout<<"\nEnter starting stop: ";
-    cin>>startind;
+    cout<<"\nEnter starting stop (1-" << stops.size() << "): ";
+    while (!(cin >> startind) || startind < 1 || startind > stops.size()) {
+        cout << "Invalid input. Please enter a number between 1 and " << stops.size() << ": ";
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 
-    
-
-    cout<<"Enter ending stop: ";
-    cin>>endind;
-
-    if(startind<1 || endind<1 || startind > stops.size() || endind > stops.size())
-    {
-        cout<<"\nInvalid starting or ending stops! ";
-        return;
+    cout<<"Enter ending stop (1-" << stops.size() << "): ";
+    while (!(cin >> endind) || endind < 1 || endind > stops.size()) {
+        cout << "Invalid input. Please enter a number between 1 and " << stops.size() << ": ";
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     
@@ -258,7 +290,7 @@ if(distance == 0)
 
 double fare = calculateFare(currentCard.cardType, distance);
 
- if(currentCard.balance<fare || currentCard.balance == 0)
+ if(currentCard.balance < fare)
     {
         cout<<"\nYou dont have sufficient balance! Please recharge first! \n";
         return;
@@ -272,8 +304,22 @@ double fare = calculateFare(currentCard.cardType, distance);
 
     // Deduct fare
     currentCard.balance -= fare;
-    cout << "\nRide started! Rs. " << fare << " deducted. Remaining balance: Rs. " 
+    cout << "\nRide started! Rs. " << fare << " deducted. Remaining balance: Rs. "
          << currentCard.balance << endl;
+
+    // Loading screen with buffer time
+    system("cls");
+    printf("Ride started!\n");
+    Sleep(2000);
+    system("cls");
+    printf("Travelling...\n");
+    Sleep(3000);
+    system("cls");
+    printf("After few minutes...\n");
+    Sleep(2000);
+    system("cls");
+    printf("Ride completed!\n");
+    Sleep(1000);
 
          saveRideHistory(currentCard.cardID, currentCard.name, currentCard.cardType, startStop, endStop, fare);
 
@@ -303,7 +349,7 @@ double fare = calculateFare(currentCard.cardType, distance);
         }
         else
         {
-            temp << id << "," << name << "," << type << "," << balance << "," << expiry << "\n";
+            temp << id << "," << name << "," << type << "," << balance << "," << expiry << "," << status << "\n";
         }
     }
 
@@ -357,30 +403,35 @@ void topupCard()
 
         if(id == searchID)
         {
-            currentCard = Card(id, name, type, balance, expiry,status);
+            // Check if card is expired and update status
+            string cardStatus = status;
+            if(isCardExpired(expiry))
+            {
+                cardStatus = "expired";
+            }
+            else
+            {
+                cardStatus = "active";
+            }
+            currentCard = Card(id, name, type, balance, expiry, cardStatus);
             found = true;
 
             cout << "\nCard found. Details:" << endl << endl;
             currentCard.display();
             cout << endl;
 
-            if(currentCard.status == "blocked")
-            {
-                cout<<"You Can't topUP! Your card is blocked!"<<endl;
-                cout<<"Contact to customer care!\nContact: 9841222122\nEmail:Fakecustomercare@pmail.com\n";
-                return;
-            }
+            // Expired cards can topup
 
             double amt;
             cout << "Enter amount to topUP: ";
             cin >> amt;
 
-            string password;
+            
             char ch;
             while(true)
             {
-                cout << "\nEnter Password: ";
-                cin >> password;
+                
+            string password = getPassword();
 
                 if(password == "kacbit")
                 {
@@ -449,6 +500,8 @@ void cardDetails()
         return;
     }
 
+    ofstream temp("temp.csv");
+
     string line;
     bool found = false;
     Card currentCard;
@@ -465,14 +518,161 @@ void cardDetails()
         getline(ss, expiry, ',');
         getline(ss, status, ',');
 
+        double balance = stod(balanceStr);
+
         if(id == searchID)
         {
-            currentCard = Card(id, name, type, stod(balanceStr), expiry,status);
+            // Check if card is expired and update status
+            string cardStatus = status;
+            if(isCardExpired(expiry))
+            {
+                cardStatus = "expired";
+            }
+            else
+            {
+                cardStatus = "active";
+            }
+            currentCard = Card(id, name, type, balance, expiry, cardStatus);
             found = true;
-            break;
+
+            // Write the updated card to temp if status changed
+            if(cardStatus != status)
+            {
+                temp << currentCard.cardID << "," << currentCard.name << ","
+                     << currentCard.cardType << "," << currentCard.balance << ","
+                     << currentCard.expiryDate << "," << currentCard.status << endl;
+            }
+            else
+            {
+                temp << line << "\n";
+            }
+        }
+        else
+        {
+            temp << line << "\n";
         }
     }
     fin.close();
+    temp.close();
+
+    if(!found)
+    {
+        cout << "Card ID not found." << endl;
+        remove("temp.csv");
+        return;
+    }
+
+    // Replace the file if status was updated
+    if(currentCard.status == "expired")
+    {
+        remove("card.csv");
+        rename("temp.csv", "card.csv");
+    }
+    else
+    {
+        remove("temp.csv");
+    }
+
+    cout << "\nCard found." << endl;
+    currentCard.display();
+    cout << "\nPress Enter to continue...";
+    cin.ignore();
+    cin.get();
+}
+
+void renewCard(bool isAdmin = false)
+{
+    string searchID;
+    cout << "\nEnter your card ID to renew: ";
+    cin >> searchID;
+
+    ifstream fin("card.csv");
+    if(!fin)
+    {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    ofstream temp("temp.csv");
+
+    string line;
+    bool found = false;
+    Card currentCard;
+
+    while(getline(fin, line))
+    {
+        stringstream ss(line);
+        string id, name, type, balanceStr, expiry, status;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, balanceStr, ',');
+        getline(ss, expiry, ',');
+        getline(ss, status, ',');
+
+        double balance = stod(balanceStr);
+
+        if(id == searchID)
+        {
+            currentCard = Card(id, name, type, balance, expiry, status);
+            found = true;
+
+            cout << "\nCard found. Details:" << endl << endl;
+            currentCard.display();
+            cout << endl;
+
+            double renewalFee = 100.0;
+            if(!isAdmin && currentCard.balance < renewalFee)
+            {
+                cout << "Insufficient balance! Renewal fee is Rs. " << renewalFee << ". Please top-up your card." << endl;
+                temp << line << "\n";
+                continue;
+            }
+
+            if(!isAdmin)
+            {
+                // Deduct renewal fee for clients
+                currentCard.balance -= renewalFee;
+            }
+
+            // Calculate new expiry date (add 1 year)
+            string currentDate = getcurrentdate();
+            int year, month, day;
+            sscanf(currentDate.c_str(), "%d-%d-%d", &year, &month, &day);
+            year += 1;
+            char newExpiry[11];
+            sprintf(newExpiry, "%04d-%02d-%02d", year, month, day);
+            currentCard.expiryDate = newExpiry;
+
+            // Reset status to active upon renewal
+            currentCard.status = "active";
+
+            if(isAdmin)
+            {
+                cout << "Card renewed successfully by admin! New expiry date: " << currentCard.expiryDate << endl;
+            }
+            else
+            {
+                cout << "Card renewed successfully! Rs. " << renewalFee << " deducted. New expiry date: " << currentCard.expiryDate << ". Remaining balance: Rs. " << currentCard.balance << endl;
+            }
+
+            // Write the updated card to temp
+            temp << currentCard.cardID << "," << currentCard.name << ","
+                 << currentCard.cardType << "," << currentCard.balance << ","
+                 << currentCard.expiryDate << "," << currentCard.status << endl;
+        }
+        else
+        {
+            // Write the original line for non-matching cards
+            temp << line << "\n";
+        }
+    }
+
+    temp.close();
+    fin.close();
+
+    remove("card.csv");
+    rename("temp.csv", "card.csv");
 
     if(!found)
     {
@@ -480,8 +680,133 @@ void cardDetails()
         return;
     }
 
-    cout << "\nCard found." << endl;
-    currentCard.display();
+    cout << "\nPress Enter to continue...";
+    cin.ignore();
+    cin.get();
+}
+
+void manipulateExpiry()
+{
+    string searchID;
+    cout << "\nEnter your card ID to manipulate expiry: ";
+    cin >> searchID;
+
+    ifstream fin("card.csv");
+    if(!fin)
+    {
+        cout << "Error opening file." << endl;
+        return;
+    }
+
+    ofstream temp("temp.csv");
+
+    string line;
+    bool found = false;
+    Card currentCard;
+
+    while(getline(fin, line))
+    {
+        stringstream ss(line);
+        string id, name, type, balanceStr, expiry, status;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, type, ',');
+        getline(ss, balanceStr, ',');
+        getline(ss, expiry, ',');
+        getline(ss, status, ',');
+
+        double balance = stod(balanceStr);
+
+        if(id == searchID)
+        {
+            currentCard = Card(id, name, type, balance, expiry, status);
+            found = true;
+
+            cout << "\nCard found. Details:" << endl << endl;
+            currentCard.display();
+            cout << endl;
+
+            cout << "Enter new expiry date (YYYY-MM-DD): ";
+            string newExpiry;
+            cin >> newExpiry;
+
+            // Validate date format (strict check)
+            if(newExpiry.length() != 10 || newExpiry[4] != '-' || newExpiry[7] != '-')
+            {
+                cout << "Invalid date format! Use YYYY-MM-DD." << endl;
+                temp << line << "\n";
+                continue;
+            }
+
+            // Check if all parts are digits and valid
+            string yearStr = newExpiry.substr(0,4);
+            string monthStr = newExpiry.substr(5,2);
+            string dayStr = newExpiry.substr(8,2);
+            if(!isNumber(yearStr) || !isNumber(monthStr) || !isNumber(dayStr))
+            {
+                cout << "Invalid date! Year, month, and day must be numbers." << endl;
+                temp << line << "\n";
+                continue;
+            }
+
+            int year = atoi(yearStr.c_str());
+            int month = atoi(monthStr.c_str());
+            int day = atoi(dayStr.c_str());
+
+            if(month < 1 || month > 12 || day < 1 || day > 31)
+            {
+                cout << "Invalid date! Month must be 01-12, day 01-31." << endl;
+                temp << line << "\n";
+                continue;
+            }
+
+            // Check if new expiry is not in the past
+            string currentDate = getcurrentdate();
+            if(newExpiry < currentDate)
+            {
+                cout << "Expiry date cannot be in the past!" << endl;
+                temp << line << "\n";
+                continue;
+            }
+
+            currentCard.expiryDate = newExpiry;
+
+            // Update status based on new expiry date
+            if(isCardExpired(newExpiry))
+            {
+                currentCard.status = "expired";
+            }
+            else
+            {
+                currentCard.status = "active";
+            }
+
+            cout << "Expiry date updated successfully! New expiry date: " << currentCard.expiryDate << endl;
+
+            // Write the updated card to temp
+            temp << currentCard.cardID << "," << currentCard.name << ","
+                 << currentCard.cardType << "," << currentCard.balance << ","
+                 << currentCard.expiryDate << "," << currentCard.status << endl;
+        }
+        else
+        {
+            // Write the original line for non-matching cards
+            temp << line << "\n";
+        }
+    }
+
+    temp.close();
+    fin.close();
+
+    remove("card.csv");
+    rename("temp.csv", "card.csv");
+
+    if(!found)
+    {
+        cout << "Card ID not found." << endl;
+        return;
+    }
+
     cout << "\nPress Enter to continue...";
     cin.ignore();
     cin.get();

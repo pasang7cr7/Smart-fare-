@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include<string>
+#include<conio.h>
 
 using namespace std;
 
@@ -16,6 +17,9 @@ double calculateFare(const string& cardType, int distance); //fare calculation b
 void saveRideHistory(const string& cardID, const string& name, const string& cardType , const string& startStop, const string& endStop, double fare );
 
 void viewRideHistory(const string& cardID);
+
+string getPassword();
+
 
 #endif
 

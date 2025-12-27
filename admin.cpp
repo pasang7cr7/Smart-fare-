@@ -1,5 +1,6 @@
 #include "admin.h"
 #include "card.h"
+#include "utils.h"
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -19,8 +20,8 @@ bool adminLogin()
     {
         cout << "Enter username: ";
         cin >> username;
-        cout << "Enter password: ";
-        cin >> password;
+        
+        password = getPassword();
 
         if(username == "admin" && password == "admin123")
         {
@@ -55,9 +56,9 @@ void adminMenu()
     system("cls");
     int choice;
     while(true){
-        
+
         cout<<"\n-----ADMIN PANEL-----"<<endl;
-        cout<<"1. View all Cards\n2. Search Card by Id\n3. View all Ride\n4. Update Card Balance\n5. Remove/Block Card\n6. Unblock Card\n7. Exit Admin Panel\nEnter choice: ";
+        cout<<"1. View all Cards\n2. Search Card by Id\n3. View all Ride\n4. Update Card Balance\n5. Remove Card\n6. Renew Card\n7. Expiry managment(for testing)\n8. Exit Admin Panel\nEnter choice: ";
         cin>>choice;
 
         switch (choice)
@@ -79,22 +80,25 @@ void adminMenu()
         rechargeCardByAdmin();
         break;
         case 5:
-        //Remove or block card
-        blockCard();
+        //Remove card
+        removeCard();
         break;
         case 6:
-        //unblock
-        unBlockCard();
-
+        // Renew Card (admin)
+        renewCard(true);
         break;
         case 7:
+        // Manipulate Expiry
+        manipulateExpiry();
+        break;
+        case 8:
         //exit admin panel;
         cout<<"Admin Panel Terminated! going back to main menu!\n";
         system("cls");
         return;
-        
 
-        
+
+
         default:
             cout<<"Invalid choice";
             return;
@@ -225,11 +229,11 @@ void rechargeCardByAdmin()
     cin.get();
 }
 
-void blockCard()
+void removeCard()
 {
-    string idBlock;
-    cout<<"Enter Id to Block: ";
-    cin>>idBlock;
+    string idRemove;
+    cout<<"Enter Id to Remove: ";
+    cin>>idRemove;
 
     ifstream readfrom("card.csv");
     ofstream temp("temp.csv");
@@ -245,18 +249,16 @@ void blockCard()
         getline(ss, type, ',');
         getline(ss, balanceStr, ',');
         getline(ss, expiry, ',');
+        getline(ss, status, ',');
 
-        if(getline(ss, status, ','))
-        status = "active";
-
-        if(id==idBlock)
+        if(id != idRemove)
         {
-            status = "blocked";
+            temp<<id<<","<<name<<","<<type<<","<<balanceStr<<","<<expiry<<","<<status<<endl;
+        }
+        else
+        {
             found = true;
         }
-
-        temp<<id<<","<<name<<","<<type<<","<<balanceStr<<","<<expiry<<","<<status<<endl;
-
     }
     readfrom.close();
     temp.close();
@@ -265,8 +267,7 @@ void blockCard()
 
     if(found)
     {
-        cout<<"Card Blocked!";
-
+        cout<<"Card Removed!";
     }
     else{
         cout<<"Card ID not found!";
@@ -274,59 +275,8 @@ void blockCard()
     cout << "\nPress Enter to continue...";
     cin.ignore();
     cin.get();
-
 }
-void unBlockCard()
-{
-    string idBlock;
-    cout<<"Enter Id to UnBlock: ";
-    cin>>idBlock;
 
-    ifstream readfrom("card.csv");
-    ofstream temp("temp.csv");
-    string line;
-    bool found = false;
-
-    while(getline(readfrom,line))
-    {
-        stringstream ss(line);
-        string id, name, type, balanceStr, expiry, status;
-        getline(ss, id, ',');
-        getline(ss, name, ',');
-        getline(ss, type, ',');
-        getline(ss, balanceStr, ',');
-        getline(ss, expiry, ',');
-
-        if(getline(ss, status, ','))
-        status = "active";
-
-        if(id==idBlock)
-        {
-            status = "active";
-            found = true;
-        }
-
-        temp<<id<<","<<name<<","<<type<<","<<balanceStr<<","<<expiry<<","<<status<<endl;
-
-    }
-    readfrom.close();
-    temp.close();
-    remove("card.csv");
-    rename("temp.csv", "card.csv");
-
-    if(found)
-    {
-        cout<<"Card UNBlocked!";
-
-    }
-    else{
-        cout<<"Card ID not found!";
-    }
-    cout << "\nPress Enter to continue...";
-    cin.ignore();
-    cin.get();
-
-}
 
 void viewAllRideHistory()
 {
